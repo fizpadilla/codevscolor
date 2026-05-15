@@ -151,15 +151,15 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn-primary" onclick="convert()">Convert</button>
-      <button class="btn-secondary" onclick="clearAll()">Clear</button>
+      <button class="btn-primary" id="convertBtn">Convert</button>
+      <button class="btn-secondary" id="clearBtn">Clear</button>
     </div>
 
     <div class="error" id="error"></div>
 
     <div class="output-header">
       <label>Output — Symantec format</label>
-      <button class="btn-copy" id="copyBtn" onclick="copyOutput()">Copy</button>
+      <button class="btn-copy" id="copyBtn">Copy</button>
     </div>
     <textarea id="output" rows="10" readonly
       placeholder="Converted output will appear here..."></textarea>
@@ -188,7 +188,7 @@
       });
     }
 
-    function convert() {
+    function runConvert() {
       const raw = document.getElementById('input').value.trim();
       const errorEl = document.getElementById('error');
       const outputEl = document.getElementById('output');
@@ -242,7 +242,7 @@
       }
     }
 
-    function clearAll() {
+    function clearForm() {
       document.getElementById('input').value = '';
       document.getElementById('output').value = '';
       document.getElementById('error').style.display = 'none';
@@ -272,9 +272,11 @@
       el.style.display = 'block';
     }
 
-    // Allow Enter key to trigger convert from input
+    document.getElementById('convertBtn').addEventListener('click', runConvert);
+    document.getElementById('clearBtn').addEventListener('click', clearForm);
+    document.getElementById('copyBtn').addEventListener('click', copyOutput);
     document.addEventListener('keydown', e => {
-      if (e.ctrlKey && e.key === 'Enter') convert();
+      if (e.ctrlKey && e.key === 'Enter') runConvert();
     });
   </script>
 </body>
