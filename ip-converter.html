@@ -151,15 +151,15 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn-primary" id="convertBtn">Convert</button>
-      <button class="btn-secondary" id="clearBtn">Clear</button>
+      <button class="btn-primary" id="convertBtn" onclick="runConvert()">Convert</button>
+      <button class="btn-secondary" id="clearBtn" onclick="clearForm()">Clear</button>
     </div>
 
     <div class="error" id="error"></div>
 
     <div class="output-header">
       <label>Output — Symantec format</label>
-      <button class="btn-copy" id="copyBtn">Copy</button>
+      <button class="btn-copy" id="copyBtn" onclick="copyOutput()">Copy</button>
     </div>
     <textarea id="output" rows="10" readonly
       placeholder="Converted output will appear here..."></textarea>
@@ -302,13 +302,8 @@
       el.style.display = 'block';
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('convertBtn').addEventListener('click', runConvert);
-      document.getElementById('clearBtn').addEventListener('click', clearForm);
-      document.getElementById('copyBtn').addEventListener('click', copyOutput);
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.key === 'Enter') runConvert();
-      });
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'Enter') runConvert();
     });
   </script>
 </body>
