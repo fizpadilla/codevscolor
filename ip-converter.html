@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CIDR to Symantec Format Converter</title>
+  <title>CIDR to Symantec Converter</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #f0f2f5;
       min-height: 100vh;
       display: flex;
@@ -16,7 +15,6 @@
       justify-content: center;
       padding: 24px;
     }
-
     .card {
       background: #fff;
       border-radius: 12px;
@@ -25,20 +23,8 @@
       width: 100%;
       max-width: 720px;
     }
-
-    h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #1a1a2e;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 0.85rem;
-      color: #6b7280;
-      margin-bottom: 24px;
-    }
-
+    h1 { font-size: 1.25rem; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+    .subtitle { font-size: 0.85rem; color: #6b7280; margin-bottom: 24px; }
     label {
       display: block;
       font-size: 0.8rem;
@@ -48,7 +34,6 @@
       letter-spacing: 0.05em;
       margin-bottom: 6px;
     }
-
     textarea {
       width: 100%;
       border: 1.5px solid #d1d5db;
@@ -58,22 +43,11 @@
       font-size: 0.875rem;
       color: #111827;
       resize: vertical;
-      transition: border-color 0.15s;
       outline: none;
     }
-
     textarea:focus { border-color: #4f46e5; }
-
-    textarea::placeholder { color: #9ca3af; }
-
     .input-area { margin-bottom: 16px; }
-
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
+    .btn-row { display: flex; gap: 10px; margin-bottom: 20px; }
     button {
       padding: 10px 22px;
       border-radius: 7px;
@@ -81,44 +55,12 @@
       font-size: 0.875rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
     }
-
-    button:active { transform: scale(0.97); }
-
-    .btn-primary {
-      background: #4f46e5;
-      color: #fff;
-    }
-
-    .btn-primary:hover { background: #4338ca; }
-
-    .btn-secondary {
-      background: #f3f4f6;
-      color: #374151;
-      border: 1.5px solid #d1d5db;
-    }
-
-    .btn-secondary:hover { background: #e5e7eb; }
-
-    .btn-copy {
-      background: #10b981;
-      color: #fff;
-      margin-left: auto;
-    }
-
-    .btn-copy:hover { background: #059669; }
-
-    .btn-copy.copied { background: #6b7280; }
-
-    .output-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
+    .btn-primary { background: #4f46e5; color: #fff; }
+    .btn-secondary { background: #f3f4f6; color: #374151; border: 1.5px solid #d1d5db; }
+    .btn-copy { background: #10b981; color: #fff; margin-left: auto; }
+    .output-header { display: flex; align-items: center; margin-bottom: 6px; }
     .output-header label { margin-bottom: 0; flex: 1; }
-
     .error {
       background: #fef2f2;
       border: 1.5px solid #fca5a5;
@@ -129,182 +71,119 @@
       margin-bottom: 16px;
       display: none;
     }
-
-    .stats {
-      font-size: 0.78rem;
-      color: #6b7280;
-      margin-top: 8px;
-    }
-
-    .stats span { font-weight: 600; color: #4f46e5; }
+    .stats { font-size: 0.78rem; color: #6b7280; margin-top: 8px; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>CIDR → Symantec Format Converter</h1>
+    <h1>CIDR to Symantec Format Converter</h1>
     <p class="subtitle">Paste your IP list in CIDR notation, get it ready for Symantec entry.</p>
 
     <div class="input-area">
-      <label>Input — CIDR addresses</label>
-      <textarea id="input" rows="5"
-        placeholder="10.128.21.0/25, 10.210.15.0/24, 192.168.1.0/26 ..."></textarea>
+      <label>Input - CIDR addresses</label>
+      <textarea id="inputBox" rows="5" placeholder="10.128.21.0/25, 10.210.15.0/24, 192.168.1.0/26 ..."></textarea>
     </div>
 
     <div class="btn-row">
-      <button class="btn-primary" id="convertBtn" onclick="runConvert()">Convert</button>
-      <button class="btn-secondary" id="clearBtn" onclick="clearForm()">Clear</button>
+      <button type="button" class="btn-primary" onclick="runConvert()">Convert</button>
+      <button type="button" class="btn-secondary" onclick="clearForm()">Clear</button>
     </div>
 
-    <div class="error" id="error"></div>
+    <div class="error" id="errorBox"></div>
 
     <div class="output-header">
-      <label>Output — Symantec format</label>
-      <button class="btn-copy" id="copyBtn" onclick="copyOutput()">Copy</button>
+      <label>Output - Symantec format</label>
+      <button type="button" class="btn-copy" onclick="copyOutput()">Copy</button>
     </div>
-    <textarea id="output" rows="10" readonly
-      placeholder="Converted output will appear here..."></textarea>
-    <div class="stats" id="stats"></div>
+    <textarea id="outputBox" rows="10" readonly placeholder="Converted output will appear here..."></textarea>
+    <div class="stats" id="statsBox"></div>
   </div>
 
-  <script>
-    function cidrToMask(prefix) {
-      var n = parseInt(prefix, 10);
-      if (isNaN(n) || n < 0 || n > 32) return null;
-      var mask = n === 0 ? 0 : ((0xFFFFFFFF << (32 - n)) >>> 0);
-      return [
-        (mask >>> 24) & 0xFF,
-        (mask >>> 16) & 0xFF,
-        (mask >>> 8)  & 0xFF,
-        mask & 0xFF
-      ].join('.');
+<script type="text/javascript">
+function cidrToMask(bits) {
+  var n = parseInt(bits, 10);
+  if (isNaN(n) || n < 0 || n > 32) { return null; }
+  if (n === 0) { return "0.0.0.0"; }
+  var mask = (0xFFFFFFFF << (32 - n)) >>> 0;
+  var a = (mask >>> 24) & 255;
+  var b = (mask >>> 16) & 255;
+  var c = (mask >>> 8)  & 255;
+  var d =  mask         & 255;
+  return a + "." + b + "." + c + "." + d;
+}
+
+function runConvert() {
+  try {
+    var inputEl  = document.getElementById("inputBox");
+    var outputEl = document.getElementById("outputBox");
+    var errorEl  = document.getElementById("errorBox");
+    var statsEl  = document.getElementById("statsBox");
+
+    errorEl.style.display = "none";
+    errorEl.innerHTML = "";
+    outputEl.value = "";
+    statsEl.textContent = "";
+
+    var raw = inputEl.value.trim();
+    if (raw === "") {
+      errorEl.innerHTML = "Please paste your IP list above.";
+      errorEl.style.display = "block";
+      return;
     }
 
-    function isValidIP(ip) {
-      var parts = ip.split('.');
-      if (parts.length !== 4) return false;
-      for (var i = 0; i < parts.length; i++) {
-        var n = parseInt(parts[i], 10);
-        if (isNaN(n) || n < 0 || n > 255 || String(n) !== parts[i]) return false;
-      }
-      return true;
-    }
+    var tokens = raw.split(/[\s,;]+/);
+    var result = [];
+    var count  = 0;
 
-    function runConvert() {
-      var raw      = document.getElementById('input').value.trim();
-      var errorEl  = document.getElementById('error');
-      var outputEl = document.getElementById('output');
-      var statsEl  = document.getElementById('stats');
+    for (var i = 0; i < tokens.length; i++) {
+      var token = tokens[i].trim();
+      if (token === "") { continue; }
 
-      errorEl.style.display = 'none';
-      outputEl.value = '';
-      statsEl.textContent = '';
-
-      if (!raw) {
-        showError('Please paste your IP list above.');
-        return;
-      }
-
-      var entries = raw.split(/[\n,;]+/);
-      var lines = [];
-      var errors = [];
-
-      for (var i = 0; i < entries.length; i++) {
-        var entry = entries[i].trim();
-        if (!entry) continue;
-
-        var slash = entry.indexOf('/');
-        if (slash === -1) {
-          errors.push('Entry ' + (i + 1) + ' "' + entry + '": missing prefix length (e.g. /24)');
-          continue;
-        }
-
-        var ip     = entry.substring(0, slash).trim();
-        var prefix = entry.substring(slash + 1).trim();
-
-        if (!isValidIP(ip)) {
-          errors.push('Entry ' + (i + 1) + ' "' + entry + '": invalid IP address');
-          continue;
-        }
-
-        var mask = cidrToMask(prefix);
-        if (!mask) {
-          errors.push('Entry ' + (i + 1) + ' "' + entry + '": invalid prefix length');
-          continue;
-        }
-
-        lines.push(ip);
-        lines.push(mask);
+      var slashPos = token.indexOf("/");
+      if (slashPos < 0) {
+        continue;
       }
 
-      if (errors.length) {
-        showError('Some entries were skipped:<br>' + errors.join('<br>'));
-      }
+      var ip     = token.substring(0, slashPos);
+      var prefix = token.substring(slashPos + 1);
+      var mask   = cidrToMask(prefix);
 
-      if (lines.length) {
-        outputEl.value = lines.join('\n');
-        var count = lines.length / 2;
-        statsEl.innerHTML = '<span>' + count + '</span> entr' + (count === 1 ? 'y' : 'ies') + ' converted.';
-      }
+      if (mask === null) { continue; }
+
+      result.push(ip);
+      result.push(mask);
+      count++;
     }
 
-    function clearForm() {
-      document.getElementById('input').value   = '';
-      document.getElementById('output').value  = '';
-      document.getElementById('error').style.display = 'none';
-      document.getElementById('stats').textContent   = '';
-      var btn = document.getElementById('copyBtn');
-      btn.textContent = 'Copy';
-      btn.className = btn.className.replace(' copied', '');
+    if (result.length === 0) {
+      errorEl.innerHTML = "No valid CIDR entries found. Make sure format is like: 10.0.0.0/24";
+      errorEl.style.display = "block";
+      return;
     }
 
-    function copyOutput() {
-      var outputEl = document.getElementById('output');
-      var text = outputEl.value;
-      if (!text) return;
+    outputEl.value = result.join("\n");
+    statsEl.textContent = count + " entr" + (count === 1 ? "y" : "ies") + " converted.";
 
-      var btn = document.getElementById('copyBtn');
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+}
 
-      // Try modern clipboard API first, fall back to execCommand for Safari
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
-          flashCopied(btn);
-        }).catch(function() {
-          fallbackCopy(outputEl, btn);
-        });
-      } else {
-        fallbackCopy(outputEl, btn);
-      }
-    }
+function clearForm() {
+  document.getElementById("inputBox").value  = "";
+  document.getElementById("outputBox").value = "";
+  document.getElementById("errorBox").style.display = "none";
+  document.getElementById("statsBox").textContent   = "";
+}
 
-    function fallbackCopy(el, btn) {
-      el.select();
-      el.setSelectionRange(0, 99999);
-      try {
-        document.execCommand('copy');
-        flashCopied(btn);
-      } catch (e) {
-        alert('Copy failed — please select the output text and copy manually (Cmd+C).');
-      }
-    }
-
-    function flashCopied(btn) {
-      btn.textContent = 'Copied!';
-      btn.className += ' copied';
-      setTimeout(function() {
-        btn.textContent = 'Copy';
-        btn.className = btn.className.replace(' copied', '');
-      }, 2000);
-    }
-
-    function showError(msg) {
-      var el = document.getElementById('error');
-      el.innerHTML = msg;
-      el.style.display = 'block';
-    }
-
-    document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.key === 'Enter') runConvert();
-    });
-  </script>
+function copyOutput() {
+  var el = document.getElementById("outputBox");
+  if (!el.value) { return; }
+  el.select();
+  el.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  alert("Copied to clipboard!");
+}
+</script>
 </body>
 </html>
