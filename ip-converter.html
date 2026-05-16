@@ -90,6 +90,30 @@
     }
     .stats { font-size: 0.78rem; color: #6b7280; margin-top: 8px; }
 
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: #f9fafb;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      font-size: 0.78rem;
+      color: #374151;
+    }
+    .legend-title {
+      width: 100%;
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+
     /* Two-column layout */
     .two-cols { display: flex; gap: 16px; margin-bottom: 16px; }
     .two-cols > div { flex: 1; }
@@ -253,6 +277,12 @@
       <button type="button" class="btn-primary"  onclick="runCompare()">Compare</button>
       <button type="button" class="btn-secondary" onclick="clearCompare()">Clear</button>
     </div>
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-item"><span class="badge ok">Match</span> IP and subnet mask are correctly entered in Symantec.</div>
+      <div class="legend-item"><span class="badge fail">Missing from Symantec</span> In your list but not found in Symantec — needs to be added.</div>
+      <div class="legend-item"><span class="badge warn">In Symantec, not in your list</span> Found in Symantec but not in your original list — likely from a previous request or unrelated entry. No action needed unless unexpected.</div>
+    </div>
     <div class="error-box" id="compareError"></div>
     <div id="compareResults"></div>
   </div>
@@ -278,6 +308,14 @@
     <div class="btn-row">
       <button type="button" class="btn-primary"  onclick="runRuleCompare()">Compare Rules</button>
       <button type="button" class="btn-secondary" onclick="clearRules()">Clear</button>
+    </div>
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-item"><span class="badge ok">Already Exists</span> Rule is in Symantec and all fields match — nothing to do.</div>
+      <div class="legend-item"><span class="badge warn">Partially Exists</span> Rule is in Symantec but some hosts or services are missing — edit the existing rule to add what is marked <strong>Add this</strong>.</div>
+      <div class="legend-item"><span class="badge fail">Not Found</span> Rule does not exist in Symantec at all — needs to be created from scratch.</div>
+      <div class="legend-item"><span class="badge ok" style="background:#16a34a;">&#10003;</span> This host/service is already in the Symantec rule.</div>
+      <div class="legend-item"><span class="badge fail">Add this</span> This host/service is missing from the rule in Symantec — add it.</div>
     </div>
     <div class="error-box" id="rulesError"></div>
     <div id="rulesResults"></div>
@@ -410,9 +448,9 @@ function runCompare() {
     }
     for(var i=0;i<rightPairs.length;i++){
       var p=rightPairs[i];
-      if(!leftSet[pairKey(p)]){extra++;rows+='<tr class="row-missing"><td>'+esc(p.ip)+'</td><td>'+esc(p.mask)+'</td><td><span class="badge warn">Extra in Symantec</span></td></tr>';}
+      if(!leftSet[pairKey(p)]){extra++;rows+='<tr class="row-missing"><td>'+esc(p.ip)+'</td><td>'+esc(p.mask)+'</td><td><span class="badge warn">In Symantec, not in your list</span></td></tr>';}
     }
-    resultsEl.innerHTML='<div class="summary"><span class="summary-item ok">&#10003; '+matched+' matched</span>'+(missing?'<span class="summary-item fail">&#10007; '+missing+' missing from Symantec</span>':'')+(extra?'<span class="summary-item warn">&#9650; '+extra+' extra in Symantec</span>':'')+'</div><table class="result-table"><thead><tr><th>IP Address</th><th>Subnet Mask</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    resultsEl.innerHTML='<div class="summary"><span class="summary-item ok">&#10003; '+matched+' matched</span>'+(missing?'<span class="summary-item fail">&#10007; '+missing+' missing from Symantec</span>':'')+(extra?'<span class="summary-item warn">&#9650; '+extra+' in Symantec but not in your list</span>':'')+'</div><table class="result-table"><thead><tr><th>IP Address</th><th>Subnet Mask</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>';
   } catch(err){alert("Error: "+err.message);}
 }
 function clearCompare(){
