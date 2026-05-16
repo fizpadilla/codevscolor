@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CIDR to Symantec Converter</title>
+  <title>Symantec IP Tool</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -21,10 +21,26 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       padding: 32px;
       width: 100%;
-      max-width: 720px;
+      max-width: 800px;
     }
     h1 { font-size: 1.25rem; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
-    .subtitle { font-size: 0.85rem; color: #6b7280; margin-bottom: 24px; }
+    .subtitle { font-size: 0.85rem; color: #6b7280; margin-bottom: 20px; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 2px solid #e5e7eb; padding-bottom: 0; }
+    .tab {
+      padding: 8px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #6b7280;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+    .tab.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+    .page { display: none; }
+    .page.active { display: block; }
+
     label {
       display: block;
       font-size: 0.8rem;
@@ -56,10 +72,10 @@
       font-weight: 600;
       cursor: pointer;
     }
-    .btn-primary { background: #4f46e5; color: #fff; }
-    .btn-secondary { background: #f3f4f6; color: #374151; border: 1.5px solid #d1d5db; }
-    .btn-copy { background: #10b981; color: #fff; margin-left: auto; }
-    .output-header { display: flex; align-items: center; margin-bottom: 6px; }
+    .btn-primary  { background: #4f46e5; color: #fff; }
+    .btn-secondary{ background: #f3f4f6; color: #374151; border: 1.5px solid #d1d5db; }
+    .btn-copy     { background: #10b981; color: #fff; margin-left: auto; }
+    .output-header{ display: flex; align-items: center; margin-bottom: 6px; }
     .output-header label { margin-bottom: 0; flex: 1; }
     .error {
       background: #fef2f2;
@@ -72,60 +88,227 @@
       display: none;
     }
     .stats { font-size: 0.78rem; color: #6b7280; margin-top: 8px; }
+
+    /* Compare layout */
+    .compare-cols { display: flex; gap: 16px; margin-bottom: 16px; }
+    .compare-col  { flex: 1; }
+    @media (max-width: 600px) { .compare-cols { flex-direction: column; } }
+
+    /* Compare results */
+    .summary {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .summary-item { font-size: 0.875rem; font-weight: 700; }
+    .summary-item.ok   { color: #16a34a; }
+    .summary-item.fail { color: #dc2626; }
+    .summary-item.warn { color: #d97706; }
+
+    .result-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; font-family: "Consolas","Courier New",monospace; }
+    .result-table th {
+      text-align: left;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border-bottom: 2px solid #e5e7eb;
+      font-family: -apple-system, sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+    }
+    .result-table td { padding: 7px 10px; border-bottom: 1px solid #f3f4f6; }
+    .result-table tr.match   td { background: #f0fdf4; }
+    .result-table tr.mismatch td { background: #fef2f2; }
+    .result-table tr.missing  td { background: #fffbeb; }
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-family: -apple-system, sans-serif;
+    }
+    .badge.ok   { background: #22c55e; color: #fff; }
+    .badge.fail { background: #ef4444; color: #fff; }
+    .badge.warn { background: #f59e0b; color: #fff; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>CIDR to Symantec Format Converter</h1>
-    <p class="subtitle">Paste your IP list in CIDR notation, get it ready for Symantec entry.</p>
+<div class="card">
+  <h1>Symantec IP Tool</h1>
+  <p class="subtitle">Convert CIDR addresses and verify Symantec entries.</p>
 
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('convert')">Convert</div>
+    <div class="tab"        onclick="showTab('compare')">Compare</div>
+  </div>
+
+  <!-- ── CONVERT PAGE ── -->
+  <div id="page-convert" class="page active">
     <div class="input-area">
       <label>Input - CIDR addresses</label>
       <textarea id="inputBox" rows="5" placeholder="10.128.21.0/25, 10.210.15.0/24, 192.168.1.0/26 ..."></textarea>
     </div>
-
     <div class="btn-row">
-      <button type="button" class="btn-primary" onclick="runConvert()">Convert</button>
-      <button type="button" class="btn-secondary" onclick="clearForm()">Clear</button>
+      <button type="button" class="btn-primary"   onclick="runConvert()">Convert</button>
+      <button type="button" class="btn-secondary"  onclick="clearConvert()">Clear</button>
     </div>
-
-    <div class="error" id="errorBox"></div>
-
+    <div class="error" id="convertError"></div>
     <div class="output-header">
       <label>Output - Symantec format</label>
       <button type="button" class="btn-copy" onclick="copyOutput()">Copy</button>
     </div>
     <textarea id="outputBox" rows="10" readonly placeholder="Converted output will appear here..."></textarea>
-    <div class="stats" id="statsBox"></div>
+    <div class="stats" id="convertStats"></div>
   </div>
 
+  <!-- ── COMPARE PAGE ── -->
+  <div id="page-compare" class="page">
+    <div class="compare-cols">
+      <div class="compare-col">
+        <label>Your CIDR list or converted output</label>
+        <textarea id="compareLeft" rows="8" placeholder="Paste your original CIDR list&#10;e.g. 10.128.21.0/25, 10.210.15.0/24&#10;&#10;or the converted output&#10;e.g.&#10;10.128.21.0&#10;255.255.255.128"></textarea>
+      </div>
+      <div class="compare-col">
+        <label>Symantec export (paste as-is)</label>
+        <textarea id="compareRight" rows="8" placeholder="Paste the raw Symantec output here.&#10;&#10;Extra words, semicolons, hyphens,&#10;and brackets will be ignored."></textarea>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn-primary"  onclick="runCompare()">Compare</button>
+      <button type="button" class="btn-secondary" onclick="clearCompare()">Clear</button>
+    </div>
+    <div class="error" id="compareError"></div>
+    <div id="compareResults"></div>
+  </div>
+</div>
+
 <script type="text/javascript">
+
+/* ── TAB SWITCHING ── */
+function showTab(name) {
+  var pages = document.getElementsByClassName('page');
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].className = pages[i].className.replace(' active', '');
+  }
+  var tabs = document.getElementsByClassName('tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].className = tabs[i].className.replace(' active', '');
+  }
+  document.getElementById('page-' + name).className += ' active';
+  tabs[name === 'convert' ? 0 : 1].className += ' active';
+}
+
+/* ── SHARED HELPERS ── */
 function cidrToMask(bits) {
   var n = parseInt(bits, 10);
   if (isNaN(n) || n < 0 || n > 32) { return null; }
   if (n === 0) { return "0.0.0.0"; }
   var mask = (0xFFFFFFFF << (32 - n)) >>> 0;
-  var a = (mask >>> 24) & 255;
-  var b = (mask >>> 16) & 255;
-  var c = (mask >>> 8)  & 255;
-  var d =  mask         & 255;
-  return a + "." + b + "." + c + "." + d;
+  return ((mask >>> 24) & 255) + "." + ((mask >>> 16) & 255) + "." + ((mask >>> 8) & 255) + "." + (mask & 255);
 }
 
+function isValidOctet(s) {
+  var n = parseInt(s, 10);
+  return !isNaN(n) && n >= 0 && n <= 255 && String(n) === s;
+}
+
+function isValidIP(ip) {
+  var p = ip.split('.');
+  if (p.length !== 4) { return false; }
+  for (var i = 0; i < 4; i++) { if (!isValidOctet(p[i])) { return false; } }
+  return true;
+}
+
+function isSubnetMask(ip) {
+  var p = ip.split('.');
+  if (p.length !== 4) { return false; }
+  var num = 0;
+  for (var i = 0; i < 4; i++) {
+    var o = parseInt(p[i], 10);
+    if (isNaN(o) || o < 0 || o > 255) { return false; }
+    num = (num * 256) + o;
+  }
+  /* Valid mask: inverted value must be 0...01...1 (i.e., inv & (inv+1) === 0) */
+  var inv = (~num) >>> 0;
+  return (inv & (inv + 1)) === 0;
+}
+
+/* Extract all IP-like strings from arbitrary text */
+function extractIPs(text) {
+  var found = [];
+  var re = /\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/g;
+  var m;
+  while ((m = re.exec(text)) !== null) {
+    if (isValidIP(m[1])) { found.push(m[1]); }
+  }
+  return found;
+}
+
+/*
+  Build an array of {ip, mask} pairs from text.
+  Accepts:
+    - CIDR notation:  10.0.0.0/24, ...
+    - Alternating lines: IP \n mask \n IP \n mask
+    - Any messy text (Symantec export): scans for consecutive non-mask + mask pairs
+*/
+function parsePairs(text) {
+  var pairs = [];
+  text = text.trim();
+  if (!text) { return pairs; }
+
+  /* If CIDR notation detected, convert first */
+  if (/\/\d{1,2}/.test(text)) {
+    var tokens = text.split(/[\s,;]+/);
+    for (var i = 0; i < tokens.length; i++) {
+      var token = tokens[i].trim();
+      var slash = token.indexOf('/');
+      if (slash < 0) { continue; }
+      var ip     = token.substring(0, slash);
+      var prefix = token.substring(slash + 1);
+      var mask   = cidrToMask(prefix);
+      if (mask && isValidIP(ip)) {
+        pairs.push({ ip: ip, mask: mask });
+      }
+    }
+    return pairs;
+  }
+
+  /* Otherwise extract all IPs and pair consecutive (non-mask, mask) */
+  var ips = extractIPs(text);
+  var i = 0;
+  while (i < ips.length) {
+    if (!isSubnetMask(ips[i])) {
+      if (i + 1 < ips.length && isSubnetMask(ips[i + 1])) {
+        pairs.push({ ip: ips[i], mask: ips[i + 1] });
+        i += 2;
+        continue;
+      }
+    }
+    i++;
+  }
+  return pairs;
+}
+
+function pairKey(p) { return p.ip + "|" + p.mask; }
+
+/* ── CONVERT PAGE ── */
 function runConvert() {
   try {
     var inputEl  = document.getElementById("inputBox");
     var outputEl = document.getElementById("outputBox");
-    var errorEl  = document.getElementById("errorBox");
-    var statsEl  = document.getElementById("statsBox");
+    var errorEl  = document.getElementById("convertError");
+    var statsEl  = document.getElementById("convertStats");
 
     errorEl.style.display = "none";
-    errorEl.innerHTML = "";
     outputEl.value = "";
     statsEl.textContent = "";
 
     var raw = inputEl.value.trim();
-    if (raw === "") {
+    if (!raw) {
       errorEl.innerHTML = "Please paste your IP list above.";
       errorEl.style.display = "block";
       return;
@@ -137,43 +320,35 @@ function runConvert() {
 
     for (var i = 0; i < tokens.length; i++) {
       var token = tokens[i].trim();
-      if (token === "") { continue; }
-
+      if (!token) { continue; }
       var slashPos = token.indexOf("/");
-      if (slashPos < 0) {
-        continue;
-      }
-
-      var ip     = token.substring(0, slashPos);
-      var prefix = token.substring(slashPos + 1);
-      var mask   = cidrToMask(prefix);
-
-      if (mask === null) { continue; }
-
+      if (slashPos < 0) { continue; }
+      var ip   = token.substring(0, slashPos);
+      var mask = cidrToMask(token.substring(slashPos + 1));
+      if (!mask) { continue; }
       result.push(ip);
       result.push(mask);
       count++;
     }
 
-    if (result.length === 0) {
-      errorEl.innerHTML = "No valid CIDR entries found. Make sure format is like: 10.0.0.0/24";
+    if (!result.length) {
+      errorEl.innerHTML = "No valid CIDR entries found. Format should be like: 10.0.0.0/24";
       errorEl.style.display = "block";
       return;
     }
 
     outputEl.value = result.join("\n");
     statsEl.textContent = count + " entr" + (count === 1 ? "y" : "ies") + " converted.";
-
   } catch (err) {
     alert("Error: " + err.message);
   }
 }
 
-function clearForm() {
-  document.getElementById("inputBox").value  = "";
-  document.getElementById("outputBox").value = "";
-  document.getElementById("errorBox").style.display = "none";
-  document.getElementById("statsBox").textContent   = "";
+function clearConvert() {
+  document.getElementById("inputBox").value      = "";
+  document.getElementById("outputBox").value     = "";
+  document.getElementById("convertError").style.display = "none";
+  document.getElementById("convertStats").textContent   = "";
 }
 
 function copyOutput() {
@@ -184,6 +359,100 @@ function copyOutput() {
   document.execCommand("copy");
   alert("Copied to clipboard!");
 }
+
+/* ── COMPARE PAGE ── */
+function runCompare() {
+  try {
+    var leftText  = document.getElementById("compareLeft").value;
+    var rightText = document.getElementById("compareRight").value;
+    var errorEl   = document.getElementById("compareError");
+    var resultsEl = document.getElementById("compareResults");
+
+    errorEl.style.display = "none";
+    resultsEl.innerHTML   = "";
+
+    if (!leftText.trim() || !rightText.trim()) {
+      errorEl.innerHTML = "Please paste content into both boxes.";
+      errorEl.style.display = "block";
+      return;
+    }
+
+    var leftPairs  = parsePairs(leftText);
+    var rightPairs = parsePairs(rightText);
+
+    if (!leftPairs.length) {
+      errorEl.innerHTML = "Could not find any IP/mask pairs in the left box.";
+      errorEl.style.display = "block";
+      return;
+    }
+    if (!rightPairs.length) {
+      errorEl.innerHTML = "Could not find any IP/mask pairs in the Symantec output.";
+      errorEl.style.display = "block";
+      return;
+    }
+
+    /* Build lookup from right side */
+    var rightSet = {};
+    for (var i = 0; i < rightPairs.length; i++) {
+      rightSet[pairKey(rightPairs[i])] = true;
+    }
+
+    /* Build lookup from left side */
+    var leftSet = {};
+    for (var i = 0; i < leftPairs.length; i++) {
+      leftSet[pairKey(leftPairs[i])] = true;
+    }
+
+    var matched = 0, missing = 0, extra = 0;
+    var rows = "";
+
+    /* Check each left entry against right */
+    for (var i = 0; i < leftPairs.length; i++) {
+      var p   = leftPairs[i];
+      var key = pairKey(p);
+      if (rightSet[key]) {
+        matched++;
+        rows += '<tr class="match"><td>' + p.ip + '</td><td>' + p.mask + '</td><td><span class="badge ok">Match</span></td></tr>';
+      } else {
+        missing++;
+        rows += '<tr class="mismatch"><td>' + p.ip + '</td><td>' + p.mask + '</td><td><span class="badge fail">Missing in Symantec</span></td></tr>';
+      }
+    }
+
+    /* Check for extra entries in right not in left */
+    for (var i = 0; i < rightPairs.length; i++) {
+      var p   = rightPairs[i];
+      var key = pairKey(p);
+      if (!leftSet[key]) {
+        extra++;
+        rows += '<tr class="missing"><td>' + p.ip + '</td><td>' + p.mask + '</td><td><span class="badge warn">Extra in Symantec</span></td></tr>';
+      }
+    }
+
+    var summary = '<div class="summary">' +
+      '<span class="summary-item ok">&#10003; ' + matched + ' matched</span>' +
+      (missing ? '<span class="summary-item fail">&#10007; ' + missing + ' missing from Symantec</span>' : '') +
+      (extra   ? '<span class="summary-item warn">&#9650; ' + extra + ' extra in Symantec</span>'       : '') +
+      '</div>';
+
+    var table = '<table class="result-table">' +
+      '<thead><tr><th>IP Address</th><th>Subnet Mask</th><th>Status</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>';
+
+    resultsEl.innerHTML = summary + table;
+
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+}
+
+function clearCompare() {
+  document.getElementById("compareLeft").value        = "";
+  document.getElementById("compareRight").value       = "";
+  document.getElementById("compareError").style.display = "none";
+  document.getElementById("compareResults").innerHTML   = "";
+}
+
 </script>
 </body>
 </html>
