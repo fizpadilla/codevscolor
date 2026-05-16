@@ -21,21 +21,22 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       padding: 32px;
       width: 100%;
-      max-width: 800px;
+      max-width: 900px;
     }
     h1 { font-size: 1.25rem; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
     .subtitle { font-size: 0.85rem; color: #6b7280; margin-bottom: 20px; }
 
     /* Tabs */
-    .tabs { display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 2px solid #e5e7eb; padding-bottom: 0; }
+    .tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid #e5e7eb; }
     .tab {
-      padding: 8px 20px;
+      padding: 8px 18px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.875rem;
       color: #6b7280;
       border-bottom: 3px solid transparent;
       margin-bottom: -2px;
+      white-space: nowrap;
     }
     .tab.active { color: #4f46e5; border-bottom-color: #4f46e5; }
     .page { display: none; }
@@ -43,7 +44,7 @@
 
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       color: #374151;
       text-transform: uppercase;
@@ -56,14 +57,14 @@
       border-radius: 8px;
       padding: 12px 14px;
       font-family: "Consolas", "Courier New", monospace;
-      font-size: 0.875rem;
+      font-size: 0.82rem;
       color: #111827;
       resize: vertical;
       outline: none;
     }
     textarea:focus { border-color: #4f46e5; }
     .input-area { margin-bottom: 16px; }
-    .btn-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .btn-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     button {
       padding: 10px 22px;
       border-radius: 7px;
@@ -72,12 +73,12 @@
       font-weight: 600;
       cursor: pointer;
     }
-    .btn-primary  { background: #4f46e5; color: #fff; }
-    .btn-secondary{ background: #f3f4f6; color: #374151; border: 1.5px solid #d1d5db; }
-    .btn-copy     { background: #10b981; color: #fff; margin-left: auto; }
-    .output-header{ display: flex; align-items: center; margin-bottom: 6px; }
+    .btn-primary   { background: #4f46e5; color: #fff; }
+    .btn-secondary { background: #f3f4f6; color: #374151; border: 1.5px solid #d1d5db; }
+    .btn-copy      { background: #10b981; color: #fff; margin-left: auto; }
+    .output-header { display: flex; align-items: center; margin-bottom: 6px; }
     .output-header label { margin-bottom: 0; flex: 1; }
-    .error {
+    .error-box {
       background: #fef2f2;
       border: 1.5px solid #fca5a5;
       border-radius: 8px;
@@ -89,61 +90,117 @@
     }
     .stats { font-size: 0.78rem; color: #6b7280; margin-top: 8px; }
 
-    /* Compare layout */
-    .compare-cols { display: flex; gap: 16px; margin-bottom: 16px; }
-    .compare-col  { flex: 1; }
-    @media (max-width: 600px) { .compare-cols { flex-direction: column; } }
+    /* Two-column layout */
+    .two-cols { display: flex; gap: 16px; margin-bottom: 16px; }
+    .two-cols > div { flex: 1; }
+    @media (max-width: 640px) { .two-cols { flex-direction: column; } }
 
-    /* Compare results */
-    .summary {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
+    /* Summary bar */
+    .summary { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
     .summary-item { font-size: 0.875rem; font-weight: 700; }
     .summary-item.ok   { color: #16a34a; }
     .summary-item.fail { color: #dc2626; }
     .summary-item.warn { color: #d97706; }
 
+    /* IP Compare table */
     .result-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; font-family: "Consolas","Courier New",monospace; }
     .result-table th {
-      text-align: left;
-      padding: 8px 10px;
-      background: #f9fafb;
-      border-bottom: 2px solid #e5e7eb;
-      font-family: -apple-system, sans-serif;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #6b7280;
+      text-align: left; padding: 8px 10px;
+      background: #f9fafb; border-bottom: 2px solid #e5e7eb;
+      font-family: -apple-system, sans-serif; font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280;
     }
     .result-table td { padding: 7px 10px; border-bottom: 1px solid #f3f4f6; }
-    .result-table tr.match   td { background: #f0fdf4; }
-    .result-table tr.mismatch td { background: #fef2f2; }
-    .result-table tr.missing  td { background: #fffbeb; }
+    .result-table tr.row-match    td { background: #f0fdf4; }
+    .result-table tr.row-mismatch td { background: #fef2f2; }
+    .result-table tr.row-missing  td { background: #fffbeb; }
+
+    /* Badge */
     .badge {
-      display: inline-block;
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      font-family: -apple-system, sans-serif;
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 4px; text-transform: uppercase;
+      font-family: -apple-system, sans-serif; white-space: nowrap;
     }
     .badge.ok   { background: #22c55e; color: #fff; }
     .badge.fail { background: #ef4444; color: #fff; }
     .badge.warn { background: #f59e0b; color: #fff; }
+    .badge.info { background: #6366f1; color: #fff; }
+
+    /* Rule cards */
+    .rule-card {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .rule-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .rule-card-header.exact   { background: #f0fdf4; border-bottom: 1.5px solid #bbf7d0; color: #15803d; }
+    .rule-card-header.partial { background: #fffbeb; border-bottom: 1.5px solid #fde68a; color: #92400e; }
+    .rule-card-header.notfound{ background: #fef2f2; border-bottom: 1.5px solid #fecaca; color: #991b1b; }
+    .rule-card-body { padding: 12px 14px; }
+
+    .field-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+      align-items: flex-start;
+    }
+    .field-label {
+      width: 90px;
+      flex-shrink: 0;
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      padding-top: 2px;
+    }
+    .field-value { flex: 1; }
+    .field-match   { color: #15803d; }
+    .field-differ  { color: #b45309; }
+    .field-missing-label { color: #dc2626; font-weight: 600; }
+
+    .host-list { display: flex; flex-direction: column; gap: 3px; }
+    .host-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: "Consolas","Courier New",monospace;
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .host-item.present { background: #f0fdf4; color: #15803d; }
+    .host-item.missing { background: #fef2f2; color: #dc2626; }
+    .host-icon { font-size: 0.7rem; font-weight: 700; }
+
+    .hint {
+      font-size: 0.78rem;
+      color: #6b7280;
+      background: #f9fafb;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
 <div class="card">
   <h1>Symantec IP Tool</h1>
-  <p class="subtitle">Convert CIDR addresses and verify Symantec entries.</p>
+  <p class="subtitle">Convert CIDR addresses, verify IP entries, and compare firewall rules.</p>
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('convert')">Convert</div>
-    <div class="tab"        onclick="showTab('compare')">Compare</div>
+    <div class="tab active" data-tab="convert" onclick="showTab('convert')">Convert</div>
+    <div class="tab" data-tab="compare" onclick="showTab('compare')">Compare IPs</div>
+    <div class="tab" data-tab="rules"   onclick="showTab('rules')">Compare Rules</div>
   </div>
 
   <!-- ── CONVERT PAGE ── -->
@@ -153,10 +210,10 @@
       <textarea id="inputBox" rows="5" placeholder="10.128.21.0/25, 10.210.15.0/24, 192.168.1.0/26 ..."></textarea>
     </div>
     <div class="btn-row">
-      <button type="button" class="btn-primary"   onclick="runConvert()">Convert</button>
-      <button type="button" class="btn-secondary"  onclick="clearConvert()">Clear</button>
+      <button type="button" class="btn-primary"  onclick="runConvert()">Convert</button>
+      <button type="button" class="btn-secondary" onclick="clearConvert()">Clear</button>
     </div>
-    <div class="error" id="convertError"></div>
+    <div class="error-box" id="convertError"></div>
     <div class="output-header">
       <label>Output - Symantec format</label>
       <button type="button" class="btn-copy" onclick="copyOutput()">Copy</button>
@@ -165,292 +222,431 @@
     <div class="stats" id="convertStats"></div>
   </div>
 
-  <!-- ── COMPARE PAGE ── -->
+  <!-- ── COMPARE IPs PAGE ── -->
   <div id="page-compare" class="page">
-    <div class="compare-cols">
-      <div class="compare-col">
+    <div class="two-cols">
+      <div>
         <label>Your CIDR list or converted output</label>
-        <textarea id="compareLeft" rows="8" placeholder="Paste your original CIDR list&#10;e.g. 10.128.21.0/25, 10.210.15.0/24&#10;&#10;or the converted output&#10;e.g.&#10;10.128.21.0&#10;255.255.255.128"></textarea>
+        <textarea id="compareLeft" rows="8" placeholder="Paste CIDR list:&#10;10.128.21.0/25, 10.210.15.0/24&#10;&#10;Or converted output:&#10;10.128.21.0&#10;255.255.255.128"></textarea>
       </div>
-      <div class="compare-col">
+      <div>
         <label>Symantec export (paste as-is)</label>
-        <textarea id="compareRight" rows="8" placeholder="Paste the raw Symantec output here.&#10;&#10;Extra words, semicolons, hyphens,&#10;and brackets will be ignored."></textarea>
+        <textarea id="compareRight" rows="8" placeholder="Paste raw Symantec output here.&#10;Extra words, semicolons, hyphens&#10;and brackets will be ignored."></textarea>
       </div>
     </div>
     <div class="btn-row">
       <button type="button" class="btn-primary"  onclick="runCompare()">Compare</button>
       <button type="button" class="btn-secondary" onclick="clearCompare()">Clear</button>
     </div>
-    <div class="error" id="compareError"></div>
+    <div class="error-box" id="compareError"></div>
     <div id="compareResults"></div>
+  </div>
+
+  <!-- ── COMPARE RULES PAGE ── -->
+  <div id="page-rules" class="page">
+    <div class="hint">
+      Copy your data directly from Excel and paste below. The tool reads the columns
+      <strong>Name, Action, Application, Host, Service</strong> (with or without headers).
+      Rows are matched by <strong>Name</strong>, and Host/Service are compared item by item
+      so you can see exactly what is already in Symantec and what still needs to be added.
+    </div>
+    <div class="two-cols">
+      <div>
+        <label>Symantec - existing rules (from Excel)</label>
+        <textarea id="rulesLeft" rows="10" placeholder="Paste the Symantec rules copied from Excel.&#10;&#10;Expected columns (tab-separated):&#10;Name  Action  Application  Host  Service  Log  Severity"></textarea>
+      </div>
+      <div>
+        <label>Agency request - rules to add (from Excel)</label>
+        <textarea id="rulesRight" rows="10" placeholder="Paste the agency-requested rules from Excel.&#10;&#10;Expected columns (tab-separated):&#10;Name  Action  Application  Host  Service"></textarea>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn-primary"  onclick="runRuleCompare()">Compare Rules</button>
+      <button type="button" class="btn-secondary" onclick="clearRules()">Clear</button>
+    </div>
+    <div class="error-box" id="rulesError"></div>
+    <div id="rulesResults"></div>
   </div>
 </div>
 
 <script type="text/javascript">
 
-/* ── TAB SWITCHING ── */
+/* ══════════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════════ */
 function showTab(name) {
   var pages = document.getElementsByClassName('page');
+  var tabs  = document.getElementsByClassName('tab');
   for (var i = 0; i < pages.length; i++) {
     pages[i].className = pages[i].className.replace(' active', '');
   }
-  var tabs = document.getElementsByClassName('tab');
   for (var i = 0; i < tabs.length; i++) {
     tabs[i].className = tabs[i].className.replace(' active', '');
+    if (tabs[i].getAttribute('data-tab') === name) {
+      tabs[i].className += ' active';
+    }
   }
   document.getElementById('page-' + name).className += ' active';
-  tabs[name === 'convert' ? 0 : 1].className += ' active';
 }
 
-/* ── SHARED HELPERS ── */
+/* ══════════════════════════════════════════
+   SHARED HELPERS
+══════════════════════════════════════════ */
 function cidrToMask(bits) {
   var n = parseInt(bits, 10);
   if (isNaN(n) || n < 0 || n > 32) { return null; }
   if (n === 0) { return "0.0.0.0"; }
   var mask = (0xFFFFFFFF << (32 - n)) >>> 0;
-  return ((mask >>> 24) & 255) + "." + ((mask >>> 16) & 255) + "." + ((mask >>> 8) & 255) + "." + (mask & 255);
+  return ((mask>>>24)&255)+"."+((mask>>>16)&255)+"."+((mask>>>8)&255)+"."+(mask&255);
 }
-
-function isValidOctet(s) {
-  var n = parseInt(s, 10);
-  return !isNaN(n) && n >= 0 && n <= 255 && String(n) === s;
-}
-
-function isValidIP(ip) {
-  var p = ip.split('.');
-  if (p.length !== 4) { return false; }
-  for (var i = 0; i < 4; i++) { if (!isValidOctet(p[i])) { return false; } }
-  return true;
-}
-
+function isValidOctet(s) { var n=parseInt(s,10); return !isNaN(n)&&n>=0&&n<=255&&String(n)===s; }
+function isValidIP(ip) { var p=ip.split('.'); if(p.length!==4){return false;} for(var i=0;i<4;i++){if(!isValidOctet(p[i])){return false;}} return true; }
 function isSubnetMask(ip) {
-  var p = ip.split('.');
-  if (p.length !== 4) { return false; }
-  var num = 0;
-  for (var i = 0; i < 4; i++) {
-    var o = parseInt(p[i], 10);
-    if (isNaN(o) || o < 0 || o > 255) { return false; }
-    num = (num * 256) + o;
-  }
-  /* Valid mask: inverted value must be 0...01...1 (i.e., inv & (inv+1) === 0) */
-  var inv = (~num) >>> 0;
-  return (inv & (inv + 1)) === 0;
+  var p=ip.split('.'); if(p.length!==4){return false;}
+  var num=0;
+  for(var i=0;i<4;i++){var o=parseInt(p[i],10);if(isNaN(o)||o<0||o>255){return false;}num=(num*256)+o;}
+  var inv=(~num)>>>0; return (inv&(inv+1))===0;
 }
-
-/* Extract all IP-like strings from arbitrary text */
 function extractIPs(text) {
-  var found = [];
-  var re = /\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/g;
-  var m;
-  while ((m = re.exec(text)) !== null) {
-    if (isValidIP(m[1])) { found.push(m[1]); }
-  }
+  var found=[],re=/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/g,m;
+  while((m=re.exec(text))!==null){if(isValidIP(m[1])){found.push(m[1]);}}
   return found;
 }
-
-/*
-  Build an array of {ip, mask} pairs from text.
-  Accepts:
-    - CIDR notation:  10.0.0.0/24, ...
-    - Alternating lines: IP \n mask \n IP \n mask
-    - Any messy text (Symantec export): scans for consecutive non-mask + mask pairs
-*/
 function parsePairs(text) {
-  var pairs = [];
-  text = text.trim();
-  if (!text) { return pairs; }
-
-  /* If CIDR notation detected, convert first */
-  if (/\/\d{1,2}/.test(text)) {
-    var tokens = text.split(/[\s,;]+/);
-    for (var i = 0; i < tokens.length; i++) {
-      var token = tokens[i].trim();
-      var slash = token.indexOf('/');
-      if (slash < 0) { continue; }
-      var ip     = token.substring(0, slash);
-      var prefix = token.substring(slash + 1);
-      var mask   = cidrToMask(prefix);
-      if (mask && isValidIP(ip)) {
-        pairs.push({ ip: ip, mask: mask });
-      }
+  var pairs=[]; text=text.trim(); if(!text){return pairs;}
+  if(/\/\d{1,2}/.test(text)){
+    var tokens=text.split(/[\s,;]+/);
+    for(var i=0;i<tokens.length;i++){
+      var token=tokens[i].trim(),slash=token.indexOf('/');
+      if(slash<0){continue;}
+      var ip=token.substring(0,slash),mask=cidrToMask(token.substring(slash+1));
+      if(mask&&isValidIP(ip)){pairs.push({ip:ip,mask:mask});}
     }
     return pairs;
   }
-
-  /* Otherwise extract all IPs and pair consecutive (non-mask, mask) */
-  var ips = extractIPs(text);
-  var i = 0;
-  while (i < ips.length) {
-    if (!isSubnetMask(ips[i])) {
-      if (i + 1 < ips.length && isSubnetMask(ips[i + 1])) {
-        pairs.push({ ip: ips[i], mask: ips[i + 1] });
-        i += 2;
-        continue;
-      }
+  var ips=extractIPs(text),i=0;
+  while(i<ips.length){
+    if(!isSubnetMask(ips[i])){
+      if(i+1<ips.length&&isSubnetMask(ips[i+1])){pairs.push({ip:ips[i],mask:ips[i+1]});i+=2;continue;}
     }
     i++;
   }
   return pairs;
 }
+function pairKey(p){return p.ip+"|"+p.mask;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function pairKey(p) { return p.ip + "|" + p.mask; }
-
-/* ── CONVERT PAGE ── */
+/* ══════════════════════════════════════════
+   CONVERT PAGE
+══════════════════════════════════════════ */
 function runConvert() {
   try {
-    var inputEl  = document.getElementById("inputBox");
-    var outputEl = document.getElementById("outputBox");
-    var errorEl  = document.getElementById("convertError");
-    var statsEl  = document.getElementById("convertStats");
-
-    errorEl.style.display = "none";
-    outputEl.value = "";
-    statsEl.textContent = "";
-
-    var raw = inputEl.value.trim();
-    if (!raw) {
-      errorEl.innerHTML = "Please paste your IP list above.";
-      errorEl.style.display = "block";
-      return;
+    var inputEl=document.getElementById("inputBox"),outputEl=document.getElementById("outputBox"),
+        errorEl=document.getElementById("convertError"),statsEl=document.getElementById("convertStats");
+    errorEl.style.display="none"; outputEl.value=""; statsEl.textContent="";
+    var raw=inputEl.value.trim();
+    if(!raw){errorEl.innerHTML="Please paste your IP list above.";errorEl.style.display="block";return;}
+    var tokens=raw.split(/[\s,;]+/),result=[],count=0;
+    for(var i=0;i<tokens.length;i++){
+      var token=tokens[i].trim(); if(!token){continue;}
+      var slashPos=token.indexOf("/"); if(slashPos<0){continue;}
+      var mask=cidrToMask(token.substring(slashPos+1)); if(!mask){continue;}
+      result.push(token.substring(0,slashPos)); result.push(mask); count++;
     }
-
-    var tokens = raw.split(/[\s,;]+/);
-    var result = [];
-    var count  = 0;
-
-    for (var i = 0; i < tokens.length; i++) {
-      var token = tokens[i].trim();
-      if (!token) { continue; }
-      var slashPos = token.indexOf("/");
-      if (slashPos < 0) { continue; }
-      var ip   = token.substring(0, slashPos);
-      var mask = cidrToMask(token.substring(slashPos + 1));
-      if (!mask) { continue; }
-      result.push(ip);
-      result.push(mask);
-      count++;
-    }
-
-    if (!result.length) {
-      errorEl.innerHTML = "No valid CIDR entries found. Format should be like: 10.0.0.0/24";
-      errorEl.style.display = "block";
-      return;
-    }
-
-    outputEl.value = result.join("\n");
-    statsEl.textContent = count + " entr" + (count === 1 ? "y" : "ies") + " converted.";
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
+    if(!result.length){errorEl.innerHTML="No valid CIDR entries found. Format: 10.0.0.0/24";errorEl.style.display="block";return;}
+    outputEl.value=result.join("\n");
+    statsEl.textContent=count+" entr"+(count===1?"y":"ies")+" converted.";
+  } catch(err){alert("Error: "+err.message);}
+}
+function clearConvert(){
+  document.getElementById("inputBox").value=""; document.getElementById("outputBox").value="";
+  document.getElementById("convertError").style.display="none"; document.getElementById("convertStats").textContent="";
+}
+function copyOutput(){
+  var el=document.getElementById("outputBox"); if(!el.value){return;}
+  el.select(); el.setSelectionRange(0,99999); document.execCommand("copy"); alert("Copied to clipboard!");
 }
 
-function clearConvert() {
-  document.getElementById("inputBox").value      = "";
-  document.getElementById("outputBox").value     = "";
-  document.getElementById("convertError").style.display = "none";
-  document.getElementById("convertStats").textContent   = "";
-}
-
-function copyOutput() {
-  var el = document.getElementById("outputBox");
-  if (!el.value) { return; }
-  el.select();
-  el.setSelectionRange(0, 99999);
-  document.execCommand("copy");
-  alert("Copied to clipboard!");
-}
-
-/* ── COMPARE PAGE ── */
+/* ══════════════════════════════════════════
+   COMPARE IPs PAGE
+══════════════════════════════════════════ */
 function runCompare() {
   try {
-    var leftText  = document.getElementById("compareLeft").value;
-    var rightText = document.getElementById("compareRight").value;
-    var errorEl   = document.getElementById("compareError");
-    var resultsEl = document.getElementById("compareResults");
+    var leftText=document.getElementById("compareLeft").value,
+        rightText=document.getElementById("compareRight").value,
+        errorEl=document.getElementById("compareError"),
+        resultsEl=document.getElementById("compareResults");
+    errorEl.style.display="none"; resultsEl.innerHTML="";
+    if(!leftText.trim()||!rightText.trim()){errorEl.innerHTML="Please paste content into both boxes.";errorEl.style.display="block";return;}
+    var leftPairs=parsePairs(leftText),rightPairs=parsePairs(rightText);
+    if(!leftPairs.length){errorEl.innerHTML="Could not find any IP/mask pairs in the left box.";errorEl.style.display="block";return;}
+    if(!rightPairs.length){errorEl.innerHTML="Could not find any IP/mask pairs in the Symantec output.";errorEl.style.display="block";return;}
+    var rightSet={},leftSet={};
+    for(var i=0;i<rightPairs.length;i++){rightSet[pairKey(rightPairs[i])]=true;}
+    for(var i=0;i<leftPairs.length;i++){leftSet[pairKey(leftPairs[i])]=true;}
+    var matched=0,missing=0,extra=0,rows="";
+    for(var i=0;i<leftPairs.length;i++){
+      var p=leftPairs[i],key=pairKey(p);
+      if(rightSet[key]){matched++;rows+='<tr class="row-match"><td>'+esc(p.ip)+'</td><td>'+esc(p.mask)+'</td><td><span class="badge ok">Match</span></td></tr>';}
+      else{missing++;rows+='<tr class="row-mismatch"><td>'+esc(p.ip)+'</td><td>'+esc(p.mask)+'</td><td><span class="badge fail">Missing in Symantec</span></td></tr>';}
+    }
+    for(var i=0;i<rightPairs.length;i++){
+      var p=rightPairs[i];
+      if(!leftSet[pairKey(p)]){extra++;rows+='<tr class="row-missing"><td>'+esc(p.ip)+'</td><td>'+esc(p.mask)+'</td><td><span class="badge warn">Extra in Symantec</span></td></tr>';}
+    }
+    resultsEl.innerHTML='<div class="summary"><span class="summary-item ok">&#10003; '+matched+' matched</span>'+(missing?'<span class="summary-item fail">&#10007; '+missing+' missing from Symantec</span>':'')+(extra?'<span class="summary-item warn">&#9650; '+extra+' extra in Symantec</span>':'')+'</div><table class="result-table"><thead><tr><th>IP Address</th><th>Subnet Mask</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  } catch(err){alert("Error: "+err.message);}
+}
+function clearCompare(){
+  document.getElementById("compareLeft").value=""; document.getElementById("compareRight").value="";
+  document.getElementById("compareError").style.display="none"; document.getElementById("compareResults").innerHTML="";
+}
+
+/* ══════════════════════════════════════════
+   COMPARE RULES PAGE
+══════════════════════════════════════════ */
+
+/* Parse tab-separated Excel data into array of objects */
+function parseTSV(text) {
+  var lines = text.trim().split(/\r?\n/);
+  var rows  = [];
+  for (var i = 0; i < lines.length; i++) {
+    /* Remove surrounding quotes Excel sometimes adds to cells with commas */
+    var cols = lines[i].split('\t');
+    var cleaned = [];
+    for (var j = 0; j < cols.length; j++) {
+      var c = cols[j].trim();
+      if (c.charAt(0) === '"' && c.charAt(c.length-1) === '"') { c = c.slice(1,-1); }
+      cleaned.push(c);
+    }
+    rows.push(cleaned);
+  }
+  return rows;
+}
+
+/* Detect which column index maps to which field */
+var FIELD_NAMES = ['name','action','application','host','service'];
+function detectColumns(headerRow) {
+  var map = {};
+  for (var i = 0; i < headerRow.length; i++) {
+    var h = headerRow[i].toLowerCase().trim();
+    if (FIELD_NAMES.indexOf(h) !== -1) { map[h] = i; }
+  }
+  return map;
+}
+
+/* If no recognizable headers, assume positional: Name, Action, Application, Host, Service */
+function positionalMap() {
+  return { name:0, action:1, application:2, host:3, service:4 };
+}
+
+function hasHeaders(firstRow) {
+  var lower = firstRow[0] ? firstRow[0].toLowerCase().trim() : '';
+  return lower === 'name' || lower === 'rule name' || lower === '#';
+}
+
+/* Convert rows to rule objects */
+function rowsToRules(rows) {
+  if (!rows.length) { return []; }
+  var colMap, startRow;
+  if (hasHeaders(rows[0])) {
+    colMap   = detectColumns(rows[0]);
+    startRow = 1;
+    /* Fill any missing fields positionally */
+    for (var i = 0; i < FIELD_NAMES.length; i++) {
+      if (!(FIELD_NAMES[i] in colMap)) { colMap[FIELD_NAMES[i]] = i; }
+    }
+  } else {
+    colMap   = positionalMap();
+    startRow = 0;
+  }
+  var rules = [];
+  for (var r = startRow; r < rows.length; r++) {
+    var row = rows[r];
+    if (!row[colMap.name] || !row[colMap.name].trim()) { continue; }
+    rules.push({
+      name:        (row[colMap.name]        || '').trim(),
+      action:      (row[colMap.action]      || '').trim(),
+      application: (row[colMap.application] || '').trim(),
+      host:        (row[colMap.host]        || '').trim(),
+      service:     (row[colMap.service]     || '').trim()
+    });
+  }
+  return rules;
+}
+
+/* Split a multi-value cell (Host or Service) into individual items */
+function splitField(val) {
+  if (!val) { return []; }
+  var parts = val.split(/[,;\n]+/);
+  var result = [];
+  for (var i = 0; i < parts.length; i++) {
+    var v = parts[i].trim();
+    if (v) { result.push(v); }
+  }
+  return result;
+}
+
+function normKey(s) { return s.toLowerCase().trim(); }
+
+/* Compare two multi-value fields, return {present, missing} */
+function compareField(agencyItems, symantecItems) {
+  var symSet = {};
+  for (var i = 0; i < symantecItems.length; i++) {
+    symSet[normKey(symantecItems[i])] = symantecItems[i];
+  }
+  var present = [], missing = [];
+  for (var i = 0; i < agencyItems.length; i++) {
+    if (symSet[normKey(agencyItems[i])] !== undefined) {
+      present.push(agencyItems[i]);
+    } else {
+      missing.push(agencyItems[i]);
+    }
+  }
+  return { present: present, missing: missing };
+}
+
+/* Render host/service comparison as a visual list */
+function renderFieldComparison(agencyVal, symantecVal, fieldName) {
+  var agencyItems   = splitField(agencyVal);
+  var symantecItems = splitField(symantecVal);
+
+  if (!agencyItems.length) {
+    return '<div class="field-row"><div class="field-label">'+fieldName+'</div><div class="field-value" style="color:#9ca3af;">Any / not specified</div></div>';
+  }
+
+  var cmp = compareField(agencyItems, symantecItems);
+  var html = '<div class="field-row"><div class="field-label">'+fieldName+'</div><div class="field-value"><div class="host-list">';
+
+  for (var i = 0; i < cmp.present.length; i++) {
+    html += '<div class="host-item present"><span class="host-icon">&#10003;</span>'+esc(cmp.present[i])+'</div>';
+  }
+  for (var i = 0; i < cmp.missing.length; i++) {
+    html += '<div class="host-item missing"><span class="host-icon">&#10007;</span>'+esc(cmp.missing[i])+'<span class="badge fail" style="margin-left:6px;font-size:0.6rem;">Add this</span></div>';
+  }
+
+  html += '</div></div></div>';
+  return html;
+}
+
+/* Render a simple single-value field */
+function renderSimpleField(label, agencyVal, symantecVal) {
+  if (!agencyVal) { return ''; }
+  var match = normKey(agencyVal) === normKey(symantecVal);
+  var cls   = match ? 'field-match' : 'field-differ';
+  var note  = match ? '' : ' &nbsp;<span style="color:#dc2626;font-size:0.75rem;">(Symantec has: '+esc(symantecVal)+')</span>';
+  return '<div class="field-row"><div class="field-label">'+label+'</div><div class="field-value '+cls+'">'+esc(agencyVal)+note+'</div></div>';
+}
+
+function runRuleCompare() {
+  try {
+    var leftText  = document.getElementById("rulesLeft").value;
+    var rightText = document.getElementById("rulesRight").value;
+    var errorEl   = document.getElementById("rulesError");
+    var resultsEl = document.getElementById("rulesResults");
 
     errorEl.style.display = "none";
     resultsEl.innerHTML   = "";
 
     if (!leftText.trim() || !rightText.trim()) {
-      errorEl.innerHTML = "Please paste content into both boxes.";
+      errorEl.innerHTML = "Please paste data into both boxes.";
       errorEl.style.display = "block";
       return;
     }
 
-    var leftPairs  = parsePairs(leftText);
-    var rightPairs = parsePairs(rightText);
+    var symantecRules = rowsToRules(parseTSV(leftText));
+    var agencyRules   = rowsToRules(parseTSV(rightText));
 
-    if (!leftPairs.length) {
-      errorEl.innerHTML = "Could not find any IP/mask pairs in the left box.";
+    if (!symantecRules.length) {
+      errorEl.innerHTML = "Could not read any rules from the Symantec box. Make sure you copy from Excel (columns: Name, Action, Application, Host, Service).";
       errorEl.style.display = "block";
       return;
     }
-    if (!rightPairs.length) {
-      errorEl.innerHTML = "Could not find any IP/mask pairs in the Symantec output.";
+    if (!agencyRules.length) {
+      errorEl.innerHTML = "Could not read any rules from the Agency box.";
       errorEl.style.display = "block";
       return;
     }
 
-    /* Build lookup from right side */
-    var rightSet = {};
-    for (var i = 0; i < rightPairs.length; i++) {
-      rightSet[pairKey(rightPairs[i])] = true;
+    /* Build lookup by normalised name */
+    var symMap = {};
+    for (var i = 0; i < symantecRules.length; i++) {
+      symMap[normKey(symantecRules[i].name)] = symantecRules[i];
     }
 
-    /* Build lookup from left side */
-    var leftSet = {};
-    for (var i = 0; i < leftPairs.length; i++) {
-      leftSet[pairKey(leftPairs[i])] = true;
-    }
+    var exactCount = 0, partialCount = 0, newCount = 0;
+    var cardsHtml = "";
 
-    var matched = 0, missing = 0, extra = 0;
-    var rows = "";
+    for (var i = 0; i < agencyRules.length; i++) {
+      var req = agencyRules[i];
+      var sym = symMap[normKey(req.name)];
 
-    /* Check each left entry against right */
-    for (var i = 0; i < leftPairs.length; i++) {
-      var p   = leftPairs[i];
-      var key = pairKey(p);
-      if (rightSet[key]) {
-        matched++;
-        rows += '<tr class="match"><td>' + p.ip + '</td><td>' + p.mask + '</td><td><span class="badge ok">Match</span></td></tr>';
+      if (!sym) {
+        /* Rule not found in Symantec at all */
+        newCount++;
+        cardsHtml +=
+          '<div class="rule-card">' +
+          '<div class="rule-card-header notfound"><span class="badge fail">Not Found</span>' + esc(req.name) + '</div>' +
+          '<div class="rule-card-body" style="color:#6b7280;font-size:0.85rem;">This rule does not exist in Symantec yet. It needs to be created.</div>' +
+          '</div>';
+        continue;
+      }
+
+      /* Compare fields */
+      var hostCmp    = compareField(splitField(req.host),    splitField(sym.host));
+      var serviceCmp = compareField(splitField(req.service), splitField(sym.service));
+      var actionMatch = normKey(req.action) === normKey(sym.action);
+      var appMatch    = normKey(req.application) === normKey(sym.application);
+
+      var hasDiff = hostCmp.missing.length > 0 || serviceCmp.missing.length > 0 || !actionMatch || !appMatch;
+
+      var headerClass, badgeHtml, statusText;
+      if (!hasDiff) {
+        exactCount++;
+        headerClass = "exact";
+        badgeHtml   = '<span class="badge ok">Already Exists</span>';
+        statusText  = "All fields match. No changes needed.";
       } else {
-        missing++;
-        rows += '<tr class="mismatch"><td>' + p.ip + '</td><td>' + p.mask + '</td><td><span class="badge fail">Missing in Symantec</span></td></tr>';
+        partialCount++;
+        headerClass = "partial";
+        badgeHtml   = '<span class="badge warn">Partially Exists</span>';
+        statusText  = "";
       }
+
+      var bodyHtml = '';
+      if (!hasDiff) {
+        bodyHtml = '<div style="color:#15803d;font-size:0.85rem;">'+statusText+'</div>';
+      } else {
+        bodyHtml += renderSimpleField("Action",      req.action,      sym.action);
+        bodyHtml += renderSimpleField("Application", req.application, sym.application);
+        bodyHtml += renderFieldComparison(req.host,    sym.host,    "Host");
+        bodyHtml += renderFieldComparison(req.service, sym.service, "Service");
+      }
+
+      cardsHtml +=
+        '<div class="rule-card">' +
+        '<div class="rule-card-header '+headerClass+'">' + badgeHtml + '&nbsp;' + esc(req.name) + '</div>' +
+        '<div class="rule-card-body">' + bodyHtml + '</div>' +
+        '</div>';
     }
 
-    /* Check for extra entries in right not in left */
-    for (var i = 0; i < rightPairs.length; i++) {
-      var p   = rightPairs[i];
-      var key = pairKey(p);
-      if (!leftSet[key]) {
-        extra++;
-        rows += '<tr class="missing"><td>' + p.ip + '</td><td>' + p.mask + '</td><td><span class="badge warn">Extra in Symantec</span></td></tr>';
-      }
-    }
-
-    var summary = '<div class="summary">' +
-      '<span class="summary-item ok">&#10003; ' + matched + ' matched</span>' +
-      (missing ? '<span class="summary-item fail">&#10007; ' + missing + ' missing from Symantec</span>' : '') +
-      (extra   ? '<span class="summary-item warn">&#9650; ' + extra + ' extra in Symantec</span>'       : '') +
+    var summary =
+      '<div class="summary" style="margin-bottom:20px;">' +
+      '<span class="summary-item ok">&#10003; '+exactCount+' fully exists</span>' +
+      (partialCount ? '<span class="summary-item warn">&#9998; '+partialCount+' partially exists (needs editing)</span>' : '') +
+      (newCount     ? '<span class="summary-item fail">&#43; '+newCount+' new rule'+(newCount>1?'s':'')+' to create</span>' : '') +
       '</div>';
 
-    var table = '<table class="result-table">' +
-      '<thead><tr><th>IP Address</th><th>Subnet Mask</th><th>Status</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody></table>';
+    resultsEl.innerHTML = summary + cardsHtml;
 
-    resultsEl.innerHTML = summary + table;
-
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
+  } catch(err) { alert("Error: " + err.message); }
 }
 
-function clearCompare() {
-  document.getElementById("compareLeft").value        = "";
-  document.getElementById("compareRight").value       = "";
-  document.getElementById("compareError").style.display = "none";
-  document.getElementById("compareResults").innerHTML   = "";
+function clearRules() {
+  document.getElementById("rulesLeft").value        = "";
+  document.getElementById("rulesRight").value       = "";
+  document.getElementById("rulesError").style.display = "none";
+  document.getElementById("rulesResults").innerHTML   = "";
 }
 
 </script>
