@@ -181,6 +181,16 @@
     .host-item.missing { background: #fef2f2; color: #dc2626; }
     .host-icon { font-size: 0.7rem; font-weight: 700; }
 
+    .tab-desc {
+      font-size: 0.82rem;
+      color: #6b7280;
+      background: #f8f9ff;
+      border-left: 3px solid #4f46e5;
+      border-radius: 0 6px 6px 0;
+      padding: 8px 12px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
     .hint {
       font-size: 0.78rem;
       color: #6b7280;
@@ -202,6 +212,11 @@
     <div class="tab" data-tab="compare" onclick="showTab('compare')">Compare IPs</div>
     <div class="tab" data-tab="rules"   onclick="showTab('rules')">Compare Rules</div>
   </div>
+
+  <!-- Tab descriptions -->
+  <div id="desc-convert" class="tab-desc">Convert a list of IP addresses in CIDR notation (e.g. 10.0.0.0/24) into the IP + subnet mask format required when adding entries into Symantec.</div>
+  <div id="desc-compare" class="tab-desc" style="display:none;">After adding IPs into Symantec, paste your original list and the Symantec export to confirm every IP and subnet mask was entered correctly.</div>
+  <div id="desc-rules"   class="tab-desc" style="display:none;">Check whether firewall rules requested by an agency already exist in Symantec. Paste the Symantec rules (copied from the UI) and the agency request (from Excel) to see what is already there, what is partially there, and what still needs to be added.</div>
 
   <!-- ── CONVERT PAGE ── -->
   <div id="page-convert" class="page active">
@@ -245,15 +260,15 @@
   <!-- ── COMPARE RULES PAGE ── -->
   <div id="page-rules" class="page">
     <div class="hint">
-      Copy your data directly from Excel and paste below. The tool reads the columns
-      <strong>Name, Action, Application, Host, Service</strong> (with or without headers).
-      Rows are matched by <strong>Name</strong>, and Host/Service are compared item by item
+      Copy the rules table directly from the <strong>Symantec UI</strong> (left) and the agency request from <strong>Excel</strong> (right).
+      Rows are matched by <strong>Name</strong>. Host and Service are compared item by item
       so you can see exactly what is already in Symantec and what still needs to be added.
+      The <strong>#</strong> column, Log, and Severity are automatically ignored.
     </div>
     <div class="two-cols">
       <div>
-        <label>Symantec - existing rules (from Excel)</label>
-        <textarea id="rulesLeft" rows="10" placeholder="Paste the Symantec rules copied from Excel.&#10;&#10;Expected columns (tab-separated):&#10;Name  Action  Application  Host  Service  Log  Severity"></textarea>
+        <label>Symantec - existing rules (copy from Symantec UI)</label>
+        <textarea id="rulesLeft" rows="10" placeholder="Select and copy the rules table directly from Symantec, then paste here.&#10;&#10;The tool reads:  Name  Action  Application  Host  Service&#10;(Log, Severity, and the # column are automatically ignored)"></textarea>
       </div>
       <div>
         <label>Agency request - rules to add (from Excel)</label>
@@ -277,16 +292,19 @@
 function showTab(name) {
   var pages = document.getElementsByClassName('page');
   var tabs  = document.getElementsByClassName('tab');
+  var descs = document.getElementsByClassName('tab-desc');
   for (var i = 0; i < pages.length; i++) {
     pages[i].className = pages[i].className.replace(' active', '');
   }
   for (var i = 0; i < tabs.length; i++) {
     tabs[i].className = tabs[i].className.replace(' active', '');
-    if (tabs[i].getAttribute('data-tab') === name) {
-      tabs[i].className += ' active';
-    }
+    if (tabs[i].getAttribute('data-tab') === name) { tabs[i].className += ' active'; }
+  }
+  for (var i = 0; i < descs.length; i++) {
+    descs[i].style.display = 'none';
   }
   document.getElementById('page-' + name).className += ' active';
+  document.getElementById('desc-' + name).style.display = 'block';
 }
 
 /* ══════════════════════════════════════════
@@ -445,6 +463,13 @@ function hasHeaders(firstRow) {
   return lower === 'name' || lower === 'rule name' || lower === '#';
 }
 
+/* If first column is '#' (Symantec row numbers), offset positional map by 1 */
+function positionalMapWithOffset(headerRow) {
+  var first = headerRow[0] ? headerRow[0].trim() : '';
+  var offset = (first === '#') ? 1 : 0;
+  return { name: 0+offset, action: 1+offset, application: 2+offset, host: 3+offset, service: 4+offset };
+}
+
 /* Convert rows to rule objects */
 function rowsToRules(rows) {
   if (!rows.length) { return []; }
@@ -452,9 +477,10 @@ function rowsToRules(rows) {
   if (hasHeaders(rows[0])) {
     colMap   = detectColumns(rows[0]);
     startRow = 1;
-    /* Fill any missing fields positionally */
+    /* Fill any missing fields using positional offset (handles # column) */
+    var fallback = positionalMapWithOffset(rows[0]);
     for (var i = 0; i < FIELD_NAMES.length; i++) {
-      if (!(FIELD_NAMES[i] in colMap)) { colMap[FIELD_NAMES[i]] = i; }
+      if (!(FIELD_NAMES[i] in colMap)) { colMap[FIELD_NAMES[i]] = fallback[FIELD_NAMES[i]]; }
     }
   } else {
     colMap   = positionalMap();
